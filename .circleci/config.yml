@@ -1,0 +1,45 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:7.10
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "webapp/yarn.lock" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          name: webapp yarn install
+          command: |
+            cd webapp
+            yarn install
+
+      - save_cache:
+          paths:
+            - webapp/node_modules
+          key: v1-dependencies-{{ checksum "webapp/yarn.lock" }}
+
+      - run:
+          name: build webapp
+          command: |
+            cd webapp
+            yarn run build
+
+      - deploy:
+          name: Deploy to Firebase Hosting
+          command: |
+            cd webapp/
+            ./node_modules/.bin/firebase deploy --token=$FIREBASE_TOKEN --non-interactive --project natac-hagifoo
