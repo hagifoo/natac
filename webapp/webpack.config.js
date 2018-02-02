@@ -7,6 +7,12 @@ module.exports = {
     filename: 'index.js',
     publicPath: '/assets/'
   },
+  resolve: {
+      modules: [
+          path.join(__dirname, 'src'),
+          'node_modules'
+      ]
+  },
   devServer: {
     contentBase: path.join(__dirname, 'public'),
     port: 3000
