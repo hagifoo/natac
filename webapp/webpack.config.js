@@ -18,12 +18,16 @@ module.exports = {
     port: 3000
   },
   module: {
-    rules: [
+      rules: [
+          {
+          test: /\.js$/,
+          use: 'babel-loader',
+          exclude: /node_modules/
+      },
       {
-        test: /\.js$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
-      }
-    ]
+          test: /\.scss$/,
+          loader: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      ]
   }
 };

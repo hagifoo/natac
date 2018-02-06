@@ -1,0 +1,22 @@
+
+@keyframes light {
+  0% {
+    fill: #777;
+  }
+  100% {
+    fill: #fff;
+  }
+}
+
+.node {
+  .active {
+    animation-name: light;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate-reverse;
+  }
+  &:hover {
+    cursor: pointer;
+    fill: #abc;
+  }
+}

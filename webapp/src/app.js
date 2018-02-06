@@ -5,6 +5,7 @@ import $ from 'jquery';
 
 import Tile from 'ui/view/tile/index';
 import Map from 'domain/entity/map';
+import 'ui/scss/index.scss';
 
 const hex2svg = function(vector, scale) {
     return {
