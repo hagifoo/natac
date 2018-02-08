@@ -4,7 +4,7 @@ import Backbone from 'backbone';
 import _ from 'underscore';
 
 import {HexVector, A, B} from 'domain/value/hex-vector';
-import * as tile from 'domain/entity/tile/index';
+import * as land from 'domain/entity/land/index';
 import Node from 'domain/value/node';
 import Edge from 'domain/value/edge';
 
@@ -102,17 +102,17 @@ export default class extends Backbone.Model {
     }
 
     generateTiles() {
-        this._oceans = _.map(this._oceanVectors, v => new tile.Ocean(v));
+        this._oceans = _.map(this._oceanVectors, v => new land.Ocean(v));
         // const center = new HexVector(0, 0, 0);
         // this._tileVectors.push(center);
         const hexes = _.sample(this._tileVectors, this._tileVectors.length);
         const tileSet = [
-            [tile.Sheep, 4],
-            [tile.Forest, 4],
-            [tile.Wheat, 4],
-            [tile.Soil, 3],
-            [tile.Mine, 3],
-            [tile.Desert, 1],
+            [land.Pasture, 4],
+            [land.Forest, 4],
+            [land.Field, 4],
+            [land.Hill, 3],
+            [land.Mountain, 3],
+            [land.Desert, 1],
         ];
 
         this._tiles = [];

@@ -1,6 +1,6 @@
-class Tile {
-    constructor(hex) {
-        this._hex = hex;
+class Land {
+    constructor(tile) {
+        this._tile = tile;
     }
 
     getColor() {
@@ -11,11 +11,11 @@ class Tile {
     }
 
     get hex() {
-        return this._hex;
+        return this._tile;
     }
 }
 
-class Soil extends Tile {
+class Hill extends Land {
     getColor() {
         return '#EF9A9A';
     }
@@ -24,7 +24,7 @@ class Soil extends Tile {
     }
 }
 
-class Sheep extends Tile {
+class Pasture extends Land {
     getColor() {
         return '#C5E1A5';
     }
@@ -33,7 +33,7 @@ class Sheep extends Tile {
     }
 }
 
-class Wheat extends Tile {
+class Field extends Land {
     getColor() {
         return '#FFE082';
     }
@@ -42,7 +42,7 @@ class Wheat extends Tile {
     }
 }
 
-class Mine extends Tile {
+class Mountain extends Land {
     getColor() {
         return '#B0BEC5';
     }
@@ -51,7 +51,7 @@ class Mine extends Tile {
     }
 }
 
-class Forest extends Tile {
+class Forest extends Land {
     getColor() {
         return '#80CBC4';
     }
@@ -60,7 +60,7 @@ class Forest extends Tile {
     }
 }
 
-class Desert extends Tile {
+class Desert extends Land {
     getColor() {
         return '#BCAAA4';
     }
@@ -69,7 +69,7 @@ class Desert extends Tile {
     }
 }
 
-class Ocean extends Tile {
+class Ocean extends Land {
     getColor() {
         return '#BBDEFB';
     }
@@ -78,4 +78,4 @@ class Ocean extends Tile {
     }
 }
 
-export {Soil, Desert, Forest, Mine, Ocean, Sheep, Tile, Wheat};
+export {Hill, Desert, Forest, Mountain, Ocean, Pasture, Land, Field};

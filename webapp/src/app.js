@@ -3,7 +3,7 @@ import {render} from 'react-dom';
 import _ from 'underscore';
 import $ from 'jquery';
 
-import Tile from 'ui/view/tile/index';
+import Land from 'ui/view/land/index';
 import Map from 'domain/entity/map';
 import 'ui/scss/index.scss';
 
@@ -64,7 +64,7 @@ class MapSVG extends React.Component {
             this.forceUpdate();
         });
         return _.map(map.tiles, t => {
-            return <Tile center={hex2svg(t.hex, 50)} r={38}
+            return <Land center={hex2svg(t.hex, 50)} r={38}
                          color={t.getColor()} hex={t.hex} text={t.getName()} />
         });
     }
