@@ -5,6 +5,8 @@ import $ from 'jquery';
 
 import Land from 'ui/view/land/index';
 import Map from 'domain/entity/map';
+import Board from 'domain/value/board';
+import Player from 'domain/entity/player';
 import 'ui/scss/index.scss';
 
 const hex2svg = function(vector, scale) {
@@ -16,6 +18,55 @@ const hex2svg = function(vector, scale) {
 
 const map = new Map();
 map.generateTiles();
+const p1 = new Player({color: '#F44336'});
+const p2 = new Player({color: '#2196F3'});
+const board = new Board({
+    players: [p1, p2],
+    map: map
+});
+
+{/*<text textAnchor="middle" dominantBaseline="middle">*/}
+    {/*&#xf1ad;*/}
+{/*</text>*/}
+class SettlementSVG extends React.Component {
+    render () {
+        const settle = this.props.settlement;
+        settle.on('change', () => {
+            this.forceUpdate();
+        });
+        const center = hex2svg(settle.node.hex, 50);
+        return <g transform={`translate(${center.x},${center.y})`}
+                  className="settlement"
+        >
+            <circle
+                cx="0"
+                cy="0"
+                r={this.props.r}
+                fill={settle.player.color}
+            />
+            <text textAnchor="middle" dominantBaseline="middle">
+                &#xf015;
+            </text>
+        </g>
+    }
+}
+
+class SettlementsSVG extends React.Component {
+    render () {
+        board.settlements.on('reset change:node', () => {
+            this.forceUpdate();
+        });
+        return board.settlements.map(s => {
+            if(!s.node) {
+                return;
+            }
+            return <SettlementSVG
+                settlement={s}
+                r="14"
+            />
+        });
+    }
+}
 
 class EdgesSVG extends React.Component {
     render () {
@@ -37,9 +88,18 @@ class EdgesSVG extends React.Component {
 }
 
 class NodeSVG extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.buildSettlement = this.buildSettlement.bind(this);
+    }
+    buildSettlement() {
+        p1.buildSettlement(this.props.node, board);
+    }
     render () {
         const center = hex2svg(this.props.node.hex, 50);
         return <circle
+            onClick={this.buildSettlement}
             className="node"
             cx={center.x}
             cy={center.y}
@@ -87,6 +147,7 @@ class SVG extends React.Component {
             <MapSVG />
             <EdgesSVG />
             <NodesSVG />
+            <SettlementsSVG />
         </svg>;
     }
 }
