@@ -25,18 +25,24 @@ class EdgesSVG extends React.Component {
         return _.map(map.edges, edge => {
             const s = hex2svg(edge.nodes[0].hex, 50);
             const e = hex2svg(edge.nodes[1].hex, 50);
-            return <line x1={s.x} y1={s.y} x2={e.x} y2={e.y}
-                         style={{stroke: "rgba(128, 128, 128, 0.5)", strokeWidth: 5}} />
+            return <line
+                className="edge"
+                x1={s.x}
+                y1={s.y}
+                x2={e.x}
+                y2={e.y}
+            />
         });
     }
 }
 
 class NodeSVG extends React.Component {
     render () {
+        const center = hex2svg(this.props.node.hex, 50);
         return <circle
             className="node"
-            cx={this.props.center.x}
-            cy={this.props.center.y}
+            cx={center.x}
+            cy={center.y}
             r={this.props.r}
         />
     }
@@ -48,9 +54,8 @@ class NodesSVG extends React.Component {
             this.forceUpdate();
         });
         return _.map(map.nodes, n => {
-            const c = hex2svg(n.hex, 50);
             return <NodeSVG
-                center={c}
+                node={n}
                 r="8"
                 color="rgba(128, 128, 128, 0.5)"
             />

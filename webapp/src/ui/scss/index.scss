@@ -9,6 +9,9 @@
 }
 
 .node {
+  fill: #aaa;
+  stroke: rgba(0, 0, 0, 0);
+  stroke-width: 10px;
   .active {
     animation-name: light;
     animation-duration: 1s;
@@ -19,4 +22,9 @@
     cursor: pointer;
     fill: #abc;
   }
+}
+
+.edge {
+  stroke: #ccc;
+  stroke-width: 5;
 }
