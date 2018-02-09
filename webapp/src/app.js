@@ -3,6 +3,11 @@ import {render} from 'react-dom';
 import _ from 'underscore';
 import $ from 'jquery';
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import AppBar from 'material-ui/AppBar';
+import RaisedButton from 'material-ui/RaisedButton';
+
+import Game from 'domain/entity/game';
 import Land from 'ui/view/land/index';
 import Map from 'domain/entity/map';
 import Board from 'domain/value/board';
@@ -23,6 +28,9 @@ const p2 = new Player({color: '#2196F3'});
 const board = new Board({
     players: [p1, p2],
     map: map
+});
+const game = new Game({
+    order: [p1, p2]
 });
 
 {/*<text textAnchor="middle" dominantBaseline="middle">*/}
@@ -62,7 +70,7 @@ class SettlementsSVG extends React.Component {
             }
             return <SettlementSVG
                 settlement={s}
-                r="14"
+                r="12"
             />
         });
     }
@@ -94,7 +102,7 @@ class NodeSVG extends React.Component {
         this.buildSettlement = this.buildSettlement.bind(this);
     }
     buildSettlement() {
-        p1.buildSettlement(this.props.node, board);
+        game.turn.player.buildSettlement(this.props.node, board);
     }
     render () {
         const center = hex2svg(this.props.node.hex, 50);
@@ -152,23 +160,69 @@ class SVG extends React.Component {
     }
 }
 
+class Turn extends React.Component {
+    render () {
+        game.on('change:turn', () => {
+            this.forceUpdate();
+        });
+        return <div style={{color: game.turn.player.color}}>
+            Turn
+        </div>;
+    }
+}
+
+class BuildSettlementButton extends React.Component {
+    build() {
+    }
+    render () {
+        return <RaisedButton
+            onClick={this.build}
+            label="Settlement"
+            primary={true}
+        >
+            <i className="fas fa-home"></i>
+        </RaisedButton>;
+    }
+}
+
+class NextTurnButton extends React.Component {
+    next() {
+        game.nextTurn();
+    }
+    render () {
+        return <RaisedButton
+            onClick={this.next}
+            label="Next Turn"
+            primary={true}
+        >
+            <i className="fas fa-arrow-alt-circle-right"></i>
+        </RaisedButton>;
+    }
+}
+
 class ResetButton extends React.Component {
     reset() {
         map.generateTiles();
     }
     render () {
-        return <button onClick={this.reset}
-                       style={{position: 'absolute'}}>Reset Map</button>;
+        return <RaisedButton
+            onClick={this.reset}
+            label="Reset Map"
+            primary={true}
+        />;
     }
 }
 
-
 class App extends React.Component {
     render () {
-        return <div>
+        return <MuiThemeProvider>
+            <AppBar />
+            <Turn />
             <ResetButton />
+            <NextTurnButton />
+            <BuildSettlementButton />
             <SVG />
-        </div>;
+        </MuiThemeProvider>;
     }
 }
 
