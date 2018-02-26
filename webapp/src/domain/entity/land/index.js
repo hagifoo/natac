@@ -1,6 +1,12 @@
-class Land {
-    constructor(tile) {
+'use strict';
+
+import Backbone from 'backbone';
+
+class Land extends Backbone.Model {
+    constructor({tile, number}) {
+        super();
         this._tile = tile;
+        this._number = number;
     }
 
     getColor() {
@@ -12,6 +18,26 @@ class Land {
 
     get hex() {
         return this._tile;
+    }
+
+    get number() {
+        return this._number;
+    }
+
+    activate() {
+        this.set({active: true});
+    }
+
+    deactivate() {
+        this.set({active: false});
+    }
+
+    isActive() {
+        return this.get('active');
+    }
+
+    select() {
+        this.trigger('select', this);
     }
 }
 
@@ -66,6 +92,10 @@ class Desert extends Land {
     }
     getName() {
         return '砂';
+    }
+
+    get number() {
+        return null;
     }
 }
 

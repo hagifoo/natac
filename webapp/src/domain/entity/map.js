@@ -14,6 +14,7 @@ export default class extends Backbone.Model {
         const center = new HexVector(0, 0, 0);
         this._tileVectors = [];
         this._oceanVectors = [];
+        this._tiles = [];
 
         _.each(_.range(-4, 4), k => {
             _.each(_.range(-4, 4), i => {
@@ -31,6 +32,10 @@ export default class extends Backbone.Model {
     }
 
     get tiles() {
+        return this._tiles;
+    }
+
+    get lands() {
         return this._tiles;
     }
 
@@ -61,7 +66,7 @@ export default class extends Backbone.Model {
                     const nexts = _.filter(ns, n2 => n2.distance(n) == 1 && n2.distance(n) != 0);
 
                     _.each(nexts, next => {
-                        const node = new Node([v, n, next]);
+                        const node = new Node({vectors: [v, n, next]});
                         nodes[node.toString()] = node;
                     })
                 });
@@ -115,16 +120,31 @@ export default class extends Backbone.Model {
             [land.Desert, 1],
         ];
 
-        this._tiles = [];
+        let numbers = [
+            2, 12,
+            3, 3, 11, 11,
+            4, 4, 10, 10,
+            5, 5, 9, 9,
+            6, 6, 8, 8
+        ];
+        numbers = _.sample(numbers, numbers.length);
+
         _.each(tileSet, t => {
             const num = t[1];
             const klass = t[0];
             _.each(_.range(num), () => {
-                this._tiles.push(new klass(hexes.pop()));
+                this._tiles.push(new klass({
+                    tile: hexes.pop(),
+                    number: numbers.pop()
+                }));
             });
         });
 
         this.trigger('reset');
+    }
+
+    getDesert() {
+        return _.find(this._tiles, t => t instanceof land.Desert);
     }
 
     getTileOf(coordinate) {

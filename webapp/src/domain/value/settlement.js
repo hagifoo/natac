@@ -20,7 +20,11 @@ export default class extends Backbone.Model {
         if(this.node) {
             throw 'Already built!';
         }
-        this.set('node', node);
+        this.set({node: node});
         return this;
+    }
+
+    destruct() {
+        this.set({node: null});
     }
 }

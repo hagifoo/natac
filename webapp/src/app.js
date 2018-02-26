@@ -1,17 +1,23 @@
+'use strict';
 import React from 'react';
 import {render} from 'react-dom';
 import _ from 'underscore';
 import $ from 'jquery';
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
+import Grid from 'material-ui/Grid';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
 
 import Game from 'domain/entity/game';
-import Land from 'ui/view/land/index';
 import Map from 'domain/entity/map';
 import Board from 'domain/value/board';
 import Player from 'domain/entity/player';
+import Land from 'ui/view/land/index';
+import PlayerList from 'ui/view/player/list';
+import ActionList from 'ui/view/action/list';
 import 'ui/scss/index.scss';
 
 const hex2svg = function(vector, scale) {
@@ -25,17 +31,23 @@ const map = new Map();
 map.generateTiles();
 const p1 = new Player({color: '#F44336'});
 const p2 = new Player({color: '#2196F3'});
+const p3 = new Player({color: '#4CAF50'});
+const order = [p1, p2, p3];
 const board = new Board({
-    players: [p1, p2],
+    players: [p1, p2, p3],
     map: map
 });
 const game = new Game({
-    order: [p1, p2]
+    order: order,
+    board: board,
+    map: map
 });
 
 {/*<text textAnchor="middle" dominantBaseline="middle">*/}
     {/*&#xf1ad;*/}
 {/*</text>*/}
+
+
 class SettlementSVG extends React.Component {
     render () {
         const settle = this.props.settlement;
@@ -76,6 +88,28 @@ class SettlementsSVG extends React.Component {
     }
 }
 
+class RobberSVG extends React.Component {
+    render () {
+        const robber = this.props.robber;
+        robber.on('change', () => {
+            this.forceUpdate();
+        });
+        const center = hex2svg(robber.hex, 50);
+        return <g transform={`translate(${center.x},${center.y})`}
+                  className="robber"
+        >
+            <circle
+                cx="0"
+                cy="0"
+                r={this.props.r}
+            />
+            <text textAnchor="middle" dominantBaseline="middle">
+                &#xf21b;
+            </text>
+        </g>
+    }
+}
+
 class EdgesSVG extends React.Component {
     render () {
         map.on('reset', () => {
@@ -99,16 +133,21 @@ class NodeSVG extends React.Component {
     constructor(props) {
         super(props);
 
-        this.buildSettlement = this.buildSettlement.bind(this);
+        this.click = this.click.bind(this);
+        this.props.node.on('change:active', () => {this.forceUpdate();});
     }
-    buildSettlement() {
-        game.turn.player.buildSettlement(this.props.node, board);
+    click() {
+        this.props.node.select();
     }
     render () {
         const center = hex2svg(this.props.node.hex, 50);
+        const className = this.props.node.isActive() ?
+            'node is-active' :
+            'node';
+
         return <circle
-            onClick={this.buildSettlement}
-            className="node"
+            onClick={this.click}
+            className={className}
             cx={center.x}
             cy={center.y}
             r={this.props.r}
@@ -136,16 +175,21 @@ class MapSVG extends React.Component {
         map.on('reset', () => {
             this.forceUpdate();
         });
-        return _.map(map.tiles, t => {
-            return <Land center={hex2svg(t.hex, 50)} r={38}
-                         color={t.getColor()} hex={t.hex} text={t.getName()} />
+        return _.map(map.lands, l => {
+            return <Land
+                land={l}
+                center={hex2svg(l.hex, 50)}
+                r={38}
+                color={l.getColor()}
+                hex={l.hex}
+                text={l.getName()} />
         });
     }
 }
 
 class SVG extends React.Component {
     render () {
-        const w = $(window).width();
+        const w = $(window).width() / 3 * 2;
         const h = $(window).height();
         return <svg
             width={w}
@@ -155,74 +199,46 @@ class SVG extends React.Component {
             <MapSVG />
             <EdgesSVG />
             <NodesSVG />
+            <RobberSVG
+                robber={game.board.robber}
+                r="14"
+            />
             <SettlementsSVG />
         </svg>;
     }
 }
 
-class Turn extends React.Component {
-    render () {
-        game.on('change:turn', () => {
-            this.forceUpdate();
-        });
-        return <div style={{color: game.turn.player.color}}>
-            Turn
-        </div>;
-    }
-}
-
-class BuildSettlementButton extends React.Component {
-    build() {
-    }
-    render () {
-        return <RaisedButton
-            onClick={this.build}
-            label="Settlement"
-            primary={true}
-        >
-            <i className="fas fa-home"></i>
-        </RaisedButton>;
-    }
-}
-
-class NextTurnButton extends React.Component {
-    next() {
-        game.nextTurn();
-    }
-    render () {
-        return <RaisedButton
-            onClick={this.next}
-            label="Next Turn"
-            primary={true}
-        >
-            <i className="fas fa-arrow-alt-circle-right"></i>
-        </RaisedButton>;
-    }
-}
-
-class ResetButton extends React.Component {
+class App extends React.Component {
     reset() {
         map.generateTiles();
     }
     render () {
-        return <RaisedButton
-            onClick={this.reset}
-            label="Reset Map"
-            primary={true}
-        />;
-    }
-}
-
-class App extends React.Component {
-    render () {
-        return <MuiThemeProvider>
-            <AppBar />
-            <Turn />
-            <ResetButton />
-            <NextTurnButton />
-            <BuildSettlementButton />
-            <SVG />
-        </MuiThemeProvider>;
+        return <div>
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="title" color="inherit">
+                        natac
+                    </Typography>
+                    <Button
+                        color="inherit"
+                        onClick={this.reset}
+                    >
+                        盤面リセット
+                    </Button>
+                </Toolbar>
+            </AppBar>
+            <Grid container spacing={12}>
+                <Grid item xs={12} sm={2}>
+                    <PlayerList game={game} />
+                </Grid>
+                <Grid item xs={12} sm={8}>
+                    <SVG />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                    <ActionList game={game} />
+                </Grid>
+            </Grid>
+        </div>;
     }
 }
 

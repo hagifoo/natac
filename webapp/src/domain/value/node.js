@@ -1,16 +1,18 @@
 'use strict';
 
 import _ from 'underscore';
+import Backbone from 'backbone';
 import {HexVector} from 'domain/value/hex-vector';
 
-export default class Node {
-    constructor(vectors) {
-        if(vectors.length != 3) {
+export default class Node extends Backbone.Model {
+    constructor(options) {
+        super(options);
+        if(options.vectors.length != 3) {
             throw 'vectors.length should be 3';
         }
 
-        this._vectors = Node.sortVectors(vectors);
-        this._3hex = _.reduce(vectors, (m, v) => m.add(v), new HexVector(0, 0, 0));
+        this._vectors = Node.sortVectors(options.vectors);
+        this._3hex = _.reduce(options.vectors, (m, v) => m.add(v), new HexVector(0, 0, 0));
     }
 
     static sortVectors(vectors) {
@@ -29,6 +31,22 @@ export default class Node {
 
     get hex() {
         return this._3hex.div(3);
+    }
+
+    activate() {
+        this.set({active: true});
+    }
+
+    deactivate() {
+        this.set({active: false});
+    }
+
+    isActive() {
+        return this.get('active');
+    }
+
+    select() {
+        this.trigger('select', this);
     }
 
     toString() {
