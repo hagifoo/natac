@@ -4,8 +4,8 @@ import _ from 'underscore';
 import Action from './index';
 
 export default class extends Action {
-    constructor({context}) {
-        super({context: context});
+    constructor(options) {
+        super(options);
 
         this._moveFrom = null;
     }
@@ -33,7 +33,6 @@ export default class extends Action {
         if(this._moveFrom) {
             this.context.board.robber.moveTo(this._moveFrom);
         }
-        this.trigger('cancel', this);
     }
 
     cancel() {

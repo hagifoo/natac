@@ -68,6 +68,22 @@ export default class extends Backbone.Model {
         return [];
     }
 
+    get chainFrom() {
+        return this._chainFrom;
+    }
+
+    isRollbackable() {
+        return !this.isBlocker() && this.isExecuted() && !this.chainFrom;
+    }
+
+    isCancelable() {
+        return !this.isExecuted() && !this.chainFrom;
+    }
+
+    isRedoable() {
+        return !this.isBlocker() && this.isExecuted();
+    }
+
     toJSON() {
 
     }

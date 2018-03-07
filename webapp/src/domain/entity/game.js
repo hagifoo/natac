@@ -22,6 +22,10 @@ export default class extends Backbone.Model {
         return this._actionRepository.getActions();
     }
 
+    get lastBlockerAction() {
+        return this._actionRepository.lastBlocker;
+    }
+
     get order() {
         return this.get('order');
     }
@@ -56,7 +60,13 @@ export default class extends Backbone.Model {
         action.execute();
     }
 
+    redo(action) {
+        action.rollback();
+        this.doAction(action);
+    }
+
     rollbackTo(action) {
         action.rollback();
+        action.trigger('cancel', action);
     }
 }

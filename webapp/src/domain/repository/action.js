@@ -6,7 +6,7 @@ export default class extends Backbone.Model {
     constructor() {
         super();
         this._actions = new Backbone.Collection();
-        this._visibleActions = [];
+        this._lastBlocker = null;
 
         this._actions.on('cancel', action => {
             this._actions.remove(action);
@@ -15,10 +15,16 @@ export default class extends Backbone.Model {
 
     add(action) {
         this._actions.add(action);
-        this._visibleActions.push(action);
+        if(action.isBlocker()) {
+            this._lastBlocker = action;
+        }
     }
 
     getActions() {
         return this._actions;
+    }
+
+    get lastBlocker() {
+        return this._lastBlocker;
     }
 }

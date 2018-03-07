@@ -30,7 +30,6 @@ export default class extends Action {
         if(this._settlement) {
             this._settlement.destruct();
         }
-        this.trigger('cancel', this);
     }
 
     _build(node) {

@@ -1,5 +1,7 @@
 'use strict';
 
+import _ from 'underscore';
+
 import React from 'react';
 import Avatar from 'material-ui/Avatar';
 import List, { ListItem, ListItemText, ListItemSecondaryAction } from 'material-ui/List';
@@ -13,6 +15,12 @@ class ActionCancelIcon extends React.Component {
 
 class ActionRollbackIcon extends React.Component {
     render () {
+        return <i className="fa fa-trash"></i>
+    }
+}
+
+class ActionRedoIcon extends React.Component {
+    render () {
         return <i className="fa fa-redo"></i>
     }
 }
@@ -21,8 +29,11 @@ class ActionItem extends React.Component {
     constructor(props) {
         super(props);
 
-        this.props.action.on('change', () => {this.forceUpdate();});
+        this.props.action.on('change', () => {
+            this.forceUpdate();
+        });
         this.cancel = this.cancel.bind(this);
+        this.redo = this.redo.bind(this);
         this.rollback = this.rollback.bind(this);
     }
 
@@ -34,27 +45,66 @@ class ActionItem extends React.Component {
         this.props.game.rollbackTo(this.props.action);
     }
 
-    render () {
-        let icon;
-        const action = this.props.action;
-        if(action.isBlocker()) {
+    redo() {
+        this.props.game.redo(this.props.action);
+    }
 
-        } else {
-            if(action.isExecuted()) {
-                icon = <IconButton
-                    aria-label="Rollback"
-                    onClick={this.rollback}
-                >
-                    <ActionRollbackIcon />
-                </IconButton>
-            } else {
-                icon = <IconButton
-                    aria-label="Cancel"
-                    onClick={this.cancel}
-                >
-                    <ActionCancelIcon />
-                </IconButton>
-            }
+    icons() {
+        let icons = [];
+        const action = this.props.action;
+
+        if(this.props.frozen) {
+            return icons;
+        }
+
+        if(action.isRedoable()){
+            icons.push(<IconButton
+                aria-label="Redo"
+                onClick={this.redo}
+            >
+                <ActionRedoIcon />
+            </IconButton>)
+        }
+        if(action.isRollbackable()) {
+            icons.push(<IconButton
+                aria-label="Rollback"
+                onClick={this.rollback}
+            >
+                <ActionRollbackIcon />
+            </IconButton>)
+        }
+        if(action.isCancelable()){
+            icons.push(<IconButton
+                aria-label="Cancel"
+                onClick={this.cancel}
+            >
+                <ActionCancelIcon />
+            </IconButton>)
+        }
+
+        return icons;
+    }
+
+    render () {
+        const action = this.props.action;
+        const icons = this.icons();
+
+        let prefix;
+        if(action.chainFrom && action.chainFrom.chainFrom) {
+            prefix = <i
+                className="fa fa-caret-down"
+                style={{
+                    marginLeft: 20,
+                    marginRight: 8}}
+            />
+        }
+        else if(action.chainFrom) {
+            prefix = <i
+                className="fa fa-caret-down"
+                style={{
+                    marginLeft: 3,
+                    marginRight: 13}}
+            />
         }
 
         return <ListItem
@@ -63,6 +113,7 @@ class ActionItem extends React.Component {
                 paddingBottom: 8
             }}
         >
+            {prefix}
             <Avatar
                 style={{
                     backgroundColor: action.context.player.color,
@@ -72,7 +123,7 @@ class ActionItem extends React.Component {
             />
             <ListItemText primary={action.name()} />
             <ListItemSecondaryAction>
-                {icon}
+                {icons}
             </ListItemSecondaryAction>
         </ListItem>;
     }
@@ -84,12 +135,23 @@ export default class ActionList extends React.Component {
         this.props.game.actions.on('add remove', () => {this.forceUpdate();});
     }
     render () {
-        const actions = this.props.game.actions.map(action => {
-            return <ActionItem
-                action={action}
-                game={this.props.game}
-            />
-        });
+        const actionCollection = this.props.game.actions;
+        const lastBlocker = this.props.game.lastBlockerAction;
+        const lastBlockerIndex = actionCollection.indexOf(lastBlocker);
+
+        const actions = _.chain(this.props.game.actions.models)
+            .map(action => {
+                const frozen = actionCollection.indexOf(action) < lastBlockerIndex;
+
+                return <ActionItem
+                    key={action.cid}
+                    action={action}
+                    game={this.props.game}
+                    frozen={frozen}
+                />
+            })
+            .reverse()
+            .value();
         return <List>
             {actions}
         </List>
