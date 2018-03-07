@@ -27,6 +27,7 @@ export default class extends Backbone.Model {
     }
 
     cancel() {
+        this.trigger('cancel');
         this.trigger('remove');
     }
 
@@ -50,9 +51,8 @@ export default class extends Backbone.Model {
             throw `This Action can not be rolled back: ${this.toJSON()}`;
         }
 
-        this.undoImpl();
-
         this.set({done: false});
+        this.undoImpl();
     }
 
     undoImpl() {
@@ -62,6 +62,7 @@ export default class extends Backbone.Model {
     finish() {
         this.set({done: true});
         this.trigger('finish', this);
+        this.trigger('done', this);
     }
 
     chainTo() {

@@ -40,6 +40,9 @@ class PlayerItem extends React.Component {
         game.on('change:turn', () => {
             this.forceUpdate();
         });
+        game.on('change:currentAction', () => {
+            this.forceUpdate();
+        });
         game.board.on('settlement', () => {
             this.forceUpdate();
         });
@@ -97,7 +100,9 @@ class PlayerItem extends React.Component {
         const className = game.turn.player == player ?
             'fa fa-star' :
             '';
+        const disableAction = game.currentAction != null;
         let content, actions;
+
         if(game.turn.player == player) {
             content = <CardContent>
                 <Typography component="p">
@@ -108,18 +113,21 @@ class PlayerItem extends React.Component {
                 <IconButton
                     aria-label="Build Settlement"
                     onClick={this.rollDice}
+                    disabled={disableAction}
                 >
                     <RollDiceIcon />
                 </IconButton>
                 <IconButton
                     aria-label="Build Settlement"
                     onClick={this.buildSettlement}
+                    disabled={disableAction}
                 >
                     <BuildSettlementIcon />
                 </IconButton>
                 <IconButton
                     aria-label="Share"
                     onClick={this.endTurn}
+                    disabled={disableAction}
                 >
                     <EndTurnIcon />
                 </IconButton>

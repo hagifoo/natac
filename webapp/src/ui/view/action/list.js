@@ -88,6 +88,9 @@ class ActionItem extends React.Component {
     render () {
         const action = this.props.action;
         const icons = this.icons();
+        const className = this.props.game.currentAction == this.props.action ?
+            'fa fa-star' :
+            '';
 
         let prefix;
         if(action.chainFrom && action.chainFrom.chainFrom) {
@@ -120,7 +123,9 @@ class ActionItem extends React.Component {
                     width: 16,
                     height: 16
                 }}
-            />
+            >
+                <i className={className} style={{fontSize: 12}}></i>
+            </Avatar>
             <ListItemText primary={action.name()} />
             <ListItemSecondaryAction>
                 {icons}

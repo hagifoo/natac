@@ -10,7 +10,8 @@ export default class extends Backbone.Model {
 
         this._actions.on('cancel', action => {
             this._actions.remove(action);
-        })
+        });
+        this.listenTo(this._actions, 'all', this.trigger);
     }
 
     add(action) {
@@ -26,5 +27,9 @@ export default class extends Backbone.Model {
 
     get lastBlocker() {
         return this._lastBlocker;
+    }
+
+    getLastUndoneAction() {
+        return this._actions.find(a => !a.isDone());
     }
 }
