@@ -11,7 +11,7 @@ export default class extends Action {
         return 'ターン終了';
     }
 
-    executeImpl() {
+    doImpl() {
         this.context.game.nextTurn();
         this.finish();
     }
@@ -20,7 +20,7 @@ export default class extends Action {
         this.trigger('cancel', this);
     }
 
-    rollbackImpl() {
+    undoImpl() {
         this.context.game.prevTurn();
         this.trigger('cancel', this);
     }

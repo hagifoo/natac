@@ -13,7 +13,7 @@ class ActionCancelIcon extends React.Component {
     }
 }
 
-class ActionRollbackIcon extends React.Component {
+class ActionUndoIcon extends React.Component {
     render () {
         return <i className="fa fa-trash"></i>
     }
@@ -34,15 +34,15 @@ class ActionItem extends React.Component {
         });
         this.cancel = this.cancel.bind(this);
         this.redo = this.redo.bind(this);
-        this.rollback = this.rollback.bind(this);
+        this.undo = this.undo.bind(this);
     }
 
     cancel() {
         this.props.action.cancel();
     }
 
-    rollback() {
-        this.props.game.rollbackTo(this.props.action);
+    undo() {
+        this.props.game.undo(this.props.action);
     }
 
     redo() {
@@ -65,12 +65,12 @@ class ActionItem extends React.Component {
                 <ActionRedoIcon />
             </IconButton>)
         }
-        if(action.isRollbackable()) {
+        if(action.isUndoable()) {
             icons.push(<IconButton
-                aria-label="Rollback"
-                onClick={this.rollback}
+                aria-label="Undo"
+                onClick={this.undo}
             >
-                <ActionRollbackIcon />
+                <ActionUndoIcon />
             </IconButton>)
         }
         if(action.isCancelable()){

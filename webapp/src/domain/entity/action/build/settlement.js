@@ -14,7 +14,7 @@ export default class extends Action {
         return '開拓地作成';
     }
 
-    executeImpl() {
+    doImpl() {
          _.each(this.context.map.nodes, n => {
              n.activate();
              n.on('select', this._build.bind(this));
@@ -26,7 +26,7 @@ export default class extends Action {
         this.trigger('cancel', this);
     }
 
-    rollbackImpl() {
+    undoImpl() {
         if(this._settlement) {
             this._settlement.destruct();
         }

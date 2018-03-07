@@ -14,7 +14,7 @@ export default class extends Action {
         return '盗賊移動';
     }
 
-    executeImpl() {
+    doImpl() {
         _.each(this.context.map.tiles, t => {
             t.activate();
             t.on('select', this._move.bind(this));
@@ -29,7 +29,7 @@ export default class extends Action {
         this.finish();
     }
 
-    rollbackImpl() {
+    undoImpl() {
         if(this._moveFrom) {
             this.context.board.robber.moveTo(this._moveFrom);
         }

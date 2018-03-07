@@ -57,16 +57,16 @@ export default class extends Backbone.Model {
                 this.doAction(a);
             });
         });
-        action.execute();
+        action.do();
     }
 
     redo(action) {
-        action.rollback();
+        action.undo();
         this.doAction(action);
     }
 
-    rollbackTo(action) {
-        action.rollback();
+    undo(action) {
+        action.undo();
         action.trigger('cancel', action);
     }
 }

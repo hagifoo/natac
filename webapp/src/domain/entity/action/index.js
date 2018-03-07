@@ -7,7 +7,7 @@ export default class extends Backbone.Model {
         super();
         this._context = context;
         this._chainFrom = chainFrom;
-        this.set({executed: false});
+        this.set({done: false});
     }
 
     name() {
@@ -22,45 +22,45 @@ export default class extends Backbone.Model {
         return false;
     }
 
-    isExecuted() {
-        return this.get('executed');
+    isDone() {
+        return this.get('done');
     }
 
     cancel() {
         this.trigger('remove');
     }
 
-    execute() {
-        if(this.isExecuted()) {
-            throw 'Already executed!';
+    do() {
+        if(this.isDone()) {
+            throw 'Already done!';
         }
 
-        this.executeImpl();
+        this.doImpl();
     }
 
-    executeImpl() {
+    doImpl() {
         throw 'Not Implemented!';
     }
 
-    rollback() {
-        if(!this.isExecuted())  {
-            throw `This Action is not executed: ${this.toJSON()}`;
+    undo() {
+        if(!this.isDone())  {
+            throw `This Action is not dod: ${this.toJSON()}`;
         }
         if(this.isBlocker()) {
             throw `This Action can not be rolled back: ${this.toJSON()}`;
         }
 
-        this.rollbackImpl();
+        this.undoImpl();
 
-        this.set({executed: false});
+        this.set({done: false});
     }
 
-    rollbackImpl() {
+    undoImpl() {
         throw 'Not Implemented!';
     }
 
     finish() {
-        this.set({executed: true});
+        this.set({done: true});
         this.trigger('finish', this);
     }
 
@@ -72,16 +72,16 @@ export default class extends Backbone.Model {
         return this._chainFrom;
     }
 
-    isRollbackable() {
-        return !this.isBlocker() && this.isExecuted() && !this.chainFrom;
+    isUndoable() {
+        return !this.isBlocker() && this.isDone() && !this.chainFrom;
     }
 
     isCancelable() {
-        return !this.isExecuted() && !this.chainFrom;
+        return !this.isDone() && !this.chainFrom;
     }
 
     isRedoable() {
-        return !this.isBlocker() && this.isExecuted();
+        return !this.isBlocker() && this.isDone();
     }
 
     toJSON() {

@@ -20,15 +20,11 @@ export default class extends Action {
         return true;
     }
 
-    executeImpl() {
+    doImpl() {
         this.finish();
     }
 
-    cancel() {
-        this._unlisten();
-    }
-
-    rollbackImpl() {
+    undoImpl() {
 
     }
 
