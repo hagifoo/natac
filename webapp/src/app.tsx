@@ -12,6 +12,8 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
 import Game from 'domain/entity/game';
+import Settlement from 'domain/value/settlement';
+import Robber from 'domain/value/robber';
 import Map from 'domain/entity/map';
 import Board from 'domain/value/board';
 import Player from 'domain/entity/player';
@@ -19,6 +21,21 @@ import Land from 'ui/view/land/index';
 import PlayerList from 'ui/view/player/list';
 import ActionList from 'ui/view/action/list';
 import 'ui/scss/index.scss';
+
+import * as firebase from "firebase";
+import 'firebase/firestore';
+import Hoge from 'test.ts'
+import 'reflect-metadata';
+import {injectable, Container} from 'inversify';
+
+@injectable()
+class Fuga extends Hoge {
+    greet() {
+        return "aaaa";
+    }
+}
+
+import 'infra/firebase/index';
 
 const hex2svg = function(vector, scale) {
     return {
@@ -47,8 +64,12 @@ const game = new Game({
     {/*&#xf1ad;*/}
 {/*</text>*/}
 
+interface SettlementProp {
+    settlement: Settlement,
+    r: string
+}
 
-class SettlementSVG extends React.Component {
+class SettlementSVG extends React.Component<SettlementProp, any> {
     render () {
         const settle = this.props.settlement;
         settle.on('change', () => {
@@ -88,7 +109,12 @@ class SettlementsSVG extends React.Component {
     }
 }
 
-class RobberSVG extends React.Component {
+interface RobberProp {
+    robber: Robber,
+    r: string
+}
+
+class RobberSVG extends React.Component<RobberProp, any> {
     render () {
         const robber = this.props.robber;
         robber.on('change', () => {
@@ -129,8 +155,14 @@ class EdgesSVG extends React.Component {
     }
 }
 
-class NodeSVG extends React.Component {
-    constructor(props) {
+interface NodeProps {
+    node: any,
+    r: string,
+    color: string
+}
+
+class NodeSVG extends React.Component<NodeProps, any> {
+    constructor(props: NodeProps) {
         super(props);
 
         this.click = this.click.bind(this);
@@ -208,7 +240,15 @@ class SVG extends React.Component {
     }
 }
 
-class App extends React.Component {
+interface Props {
+
+}
+
+interface State {
+
+}
+
+class App extends React.Component<Props, State> {
     reset() {
         map.generateTiles();
     }
@@ -227,7 +267,7 @@ class App extends React.Component {
                     </Button>
                 </Toolbar>
             </AppBar>
-            <Grid container spacing={12}>
+            <Grid container spacing={16}>
                 <Grid item xs={12} sm={2}>
                     <PlayerList game={game} />
                 </Grid>

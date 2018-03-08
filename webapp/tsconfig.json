@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "allowJs": true,
+        "rootDirs": ["src"],
+        "lib": ["es2017", "dom"],
+        "types": ["reflect-metadata"],
+        "module": "es2015",
+        "jsx": "React",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    }
+}

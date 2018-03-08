@@ -6,7 +6,8 @@ import _ from 'underscore';
 import Turn from 'domain/value/turn';
 import ActionRepository from 'domain/repository/action';
 
-export default class extends Backbone.Model {
+export default class Game extends Backbone.Model {
+    _actionRepository: any;
     constructor(options) {
         super(options);
         this.set('turn', new Turn({player: this.get('order')[0]}));

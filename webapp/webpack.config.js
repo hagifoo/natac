@@ -1,7 +1,7 @@
 const path = require('path');
  
 module.exports = {
-  entry: path.join(__dirname, 'src/app.js'),
+  entry: path.join(__dirname, 'src/app.tsx'),
   output: {
     path: path.join(__dirname, 'public', 'assets'),
     filename: 'index.js',
@@ -11,6 +11,9 @@ module.exports = {
       modules: [
           path.join(__dirname, 'src'),
           'node_modules'
+      ],
+      extensions: [
+          '.ts', '.tsx', '.js', '.json'
       ]
   },
   devtool: "#source-map",
@@ -21,14 +24,18 @@ module.exports = {
   module: {
       rules: [
           {
-          test: /\.js$/,
-          use: 'babel-loader',
-          exclude: /node_modules/
-      },
-      {
-          test: /\.scss$/,
-          loader: ['style-loader', 'css-loader', 'sass-loader']
-      },
+              test: /\.js$/,
+              use: 'babel-loader',
+              exclude: /node_modules/
+          },
+          {
+              test: /\.scss$/,
+              loader: ['style-loader', 'css-loader', 'sass-loader']
+          },
+          {
+              test: /\.tsx?$/,
+              loader: ['babel-loader', 'ts-loader']
+          },
       ]
   }
 };
